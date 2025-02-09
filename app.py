@@ -6,7 +6,7 @@ from functools import wraps
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
-app.config['JWT_SECRET_KEY'] = 'supersecret'  # Змінити на більш безпечний ключ
+app.config['JWT_SECRET_KEY'] = 'supersecret'  
 
 db = SQLAlchemy(app)
 jwt = JWTManager(app)
@@ -16,7 +16,7 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
     password = db.Column(db.String(80), nullable=False)
-    role = db.Column(db.String(20), nullable=False)  # 'Admin' або 'User'
+    role = db.Column(db.String(20), nullable=False)  
 
 # Модель продукту
 class Product(db.Model):
@@ -33,7 +33,7 @@ def role_required(role):
     def decorator(func):
         @wraps(func)
         def wrapper(*args, **kwargs):
-            identity = json.loads(get_jwt_identity())  # ✅ Розпарсити JSON-рядок у словник
+            identity = json.loads(get_jwt_identity())  
             user_role = identity.get("role")
             if user_role != role:
                 return jsonify({"message": "Access denied"}), 403
@@ -61,7 +61,7 @@ def login():
     if not user:
         return jsonify({"message": "Invalid credentials"}), 401
 
-    access_token = create_access_token(identity=json.dumps({"username": user.username, "role": user.role}))  # ✅ Фіксований токен
+    access_token = create_access_token(identity=json.dumps({"username": user.username, "role": user.role}))  
     return jsonify(access_token=access_token)
 
 # GET: Отримання всіх продуктів (доступно всім користувачам)
